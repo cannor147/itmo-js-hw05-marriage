@@ -8,7 +8,7 @@ test:
   only:
     - triggers
   trigger:
-    project: yandex-courses/frontend/internal/homeworks/js/04-pub-sub
+    project: yandex-courses/frontend/internal/homeworks/js/05-marriage
     strategy: depend
   variables:
     UPSTREAM_PROJECT: ${CI_PROJECT_PATH}
