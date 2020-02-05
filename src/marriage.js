@@ -71,8 +71,8 @@ const Iterator = createExtension(
     for (const friend of friends) {
       const possibleGuest = {
         person: friend,
-        available: friend.best,
         filtered: filter.test(friend),
+        available: friend.best,
         used: false,
         ready: friend.best
       };
@@ -95,35 +95,34 @@ const Iterator = createExtension(
   },
   {
     _levelUp() {
-      const count = this._possibleGuests.length;
-      for (let i = 0; i < count; i++) {
+      for (let i = 0; i < this._possibleGuests.length; i++) {
         const possibleGuest = this._possibleGuests[i];
 
         if (possibleGuest.available) {
-          this._possibleGuests[i].ready = true;
+          possibleGuest.ready = true;
         }
       }
 
       this._index = 0;
     },
     next() {
-      let guest = undefined;
+      let guest = null;
 
       while (!this.done()) {
         for (this._index = 0; this._index < this._possibleGuests.length; this._index++) {
           const possibleGuest = this._possibleGuests[this._index];
 
-          if (guest) {
-            return guest;
-          }
-
           if (possibleGuest.ready) {
+            if (guest) {
+              return guest;
+            }
+
             for (const friend of possibleGuest.person.friends) {
               const possibleGuestIndex = this._possibleGuestIndexes[friend];
               const newGuest = this._possibleGuests[possibleGuestIndex];
 
               if (!newGuest.ready && !newGuest.available && !newGuest.used) {
-                this._possibleGuests[possibleGuestIndex].available = true;
+                newGuest.available = true;
 
                 if (newGuest.filtered) {
                   this._availableAndFilteredGuestCount++;
@@ -132,9 +131,9 @@ const Iterator = createExtension(
             }
 
             if (possibleGuest.filtered) {
-              this._possibleGuests[this._index].used = true;
-              this._possibleGuests[this._index].available = false;
-              this._possibleGuests[this._index].ready = false;
+              possibleGuest.used = true;
+              possibleGuest.available = false;
+              possibleGuest.ready = false;
               this._availableAndFilteredGuestCount--;
 
               guest = possibleGuest.person;
