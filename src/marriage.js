@@ -93,7 +93,7 @@ const Iterator = createExtension(
       }
     }
 
-    possibleGuests.sort(compareStrings);
+    possibleGuests.sort((a, b) => compareStrings(a.person.name, b.person.name));
     for (let i = 0; i < possibleGuests.length; i++) {
       possibleGuestIndexes[possibleGuests[i].person.name] = i;
     }
