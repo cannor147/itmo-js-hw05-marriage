@@ -19,6 +19,16 @@ function createExtension(baseClass, constructor, prototype) {
   return constructor;
 }
 
+const compareStrings = (a, b) => {
+  if (a < b) {
+    return -1;
+  } else if (a > b) {
+    return 1;
+  }
+
+  return 0;
+};
+
 /**
  * Фильтр друзей
  * @constructor
@@ -83,7 +93,7 @@ const Iterator = createExtension(
       }
     }
 
-    possibleGuests.sort((a, b) => a.person.name.localeCompare(b.person.name));
+    possibleGuests.sort(compareStrings);
     for (let i = 0; i < possibleGuests.length; i++) {
       possibleGuestIndexes[possibleGuests[i].person.name] = i;
     }
