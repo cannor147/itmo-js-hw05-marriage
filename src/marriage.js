@@ -119,7 +119,7 @@ const Iterator = createExtension(
       let guest = null;
 
       while (!this.done()) {
-        for (this._index = 0; this._index < this._possibleGuests.length; this._index++) {
+        while (this._index < this._possibleGuests.length) {
           const possibleGuest = this._possibleGuests[this._index];
 
           if (possibleGuest.ready) {
@@ -149,6 +149,7 @@ const Iterator = createExtension(
               guest = possibleGuest.person;
             }
           }
+          this._index++;
         }
         this._levelUp();
       }
