@@ -83,8 +83,8 @@ const Iterator = createExtension(
         person: friend,
         filtered: filter.test(friend),
         available: friend.best,
-        used: false,
-        ready: friend.best
+        ready: friend.best,
+        used: false
       };
 
       possibleGuests.push(possibleGuest);
@@ -123,7 +123,7 @@ const Iterator = createExtension(
           const possibleGuest = this._possibleGuests[this._index];
 
           if (possibleGuest.ready) {
-            if (guest) {
+            if (guest !== null) {
               return guest;
             }
 
@@ -140,12 +140,12 @@ const Iterator = createExtension(
               }
             }
 
-            if (possibleGuest.filtered) {
-              possibleGuest.used = true;
-              possibleGuest.available = false;
-              possibleGuest.ready = false;
-              this._availableAndFilteredGuestCount--;
+            possibleGuest.used = true;
+            possibleGuest.available = false;
+            possibleGuest.ready = false;
 
+            if (possibleGuest.filtered) {
+              this._availableAndFilteredGuestCount--;
               guest = possibleGuest.person;
             }
           }
