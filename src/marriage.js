@@ -123,7 +123,7 @@ const Iterator = createExtension(
           const possibleGuest = this._possibleGuests[this._index];
 
           if (possibleGuest.ready) {
-            if (guest !== null) {
+            if (possibleGuest.filtered && guest !== null) {
               return guest;
             }
 
