@@ -102,7 +102,8 @@ const Iterator = createExtension(
       this._index = 0;
     },
     _findNext() {
-      for (let i = 0, changes = false; changes || i < 2; i++, changes = false) {
+      for (let i = 0, changes = false; changes || i < 2; i++) {
+        changes = false;
         while (this._index < this._possibleGuests.length) {
           const possibleGuest = this._possibleGuests[this._index];
 
@@ -123,6 +124,8 @@ const Iterator = createExtension(
             possibleGuest.ready = false;
 
             if (possibleGuest.filtered) {
+              this._index++;
+
               return possibleGuest.person;
             }
           }
