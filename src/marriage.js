@@ -109,7 +109,7 @@ const Iterator = createExtension(
       let guest = null;
 
       let changes = true;
-      while (changes) {
+      while (!this.done() || changes) {
         changes = false;
         while (this._index < this._possibleGuests.length) {
           const possibleGuest = this._possibleGuests[this._index];
