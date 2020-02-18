@@ -98,7 +98,7 @@ const Iterator = createExtension(
       for (let i = 0; i < this._possibleGuests.length; i++) {
         const possibleGuest = this._possibleGuests[i];
 
-        if (possibleGuest.available) {
+        if (possibleGuest.available && !possibleGuest.used) {
           possibleGuest.ready = true;
         }
       }
@@ -108,7 +108,7 @@ const Iterator = createExtension(
     next() {
       let guest = null;
 
-      let changes = true;
+      let changes = false;
       while (!this.done() || changes) {
         changes = false;
         while (this._index < this._possibleGuests.length) {
