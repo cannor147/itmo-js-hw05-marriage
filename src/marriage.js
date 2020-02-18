@@ -64,7 +64,6 @@ const Iterator = createExtension(
       throw new TypeError("Argument 'filter' expected to be a Filter instance.");
     }
 
-    let availableAndFilteredGuestCount = 0;
     const possibleGuests = [];
     const possibleGuestIndexes = [];
 
@@ -78,9 +77,6 @@ const Iterator = createExtension(
       };
 
       possibleGuests.push(possibleGuest);
-      if (possibleGuest.available && possibleGuest.filtered) {
-        availableAndFilteredGuestCount++;
-      }
     }
 
     possibleGuests.sort((a, b) => a.person.name.localeCompare(b.person.name));
@@ -88,10 +84,10 @@ const Iterator = createExtension(
       possibleGuestIndexes[possibleGuests[i].person.name] = i;
     }
 
-    this._availableAndFilteredGuestCount = availableAndFilteredGuestCount;
     this._possibleGuestIndexes = possibleGuestIndexes;
     this._possibleGuests = possibleGuests;
     this._index = 0;
+    this._currentGuest = this._findNext();
   },
   {
     _levelUp() {
@@ -105,20 +101,13 @@ const Iterator = createExtension(
 
       this._index = 0;
     },
-    next() {
-      let guest = null;
-
-      let changes = false;
-      while (!this.done() || changes) {
-        changes = false;
+    _findNext() {
+      for (let i = 0, changes = false; changes || i < 2; i++, changes = false) {
         while (this._index < this._possibleGuests.length) {
           const possibleGuest = this._possibleGuests[this._index];
 
           if (possibleGuest.ready) {
             changes = true;
-            if (possibleGuest.filtered && guest !== null) {
-              return guest;
-            }
 
             for (const friend of possibleGuest.person.friends) {
               const possibleGuestIndex = this._possibleGuestIndexes[friend];
@@ -126,10 +115,6 @@ const Iterator = createExtension(
 
               if (!newGuest.ready && !newGuest.available && !newGuest.used) {
                 newGuest.available = true;
-
-                if (newGuest.filtered) {
-                  this._availableAndFilteredGuestCount++;
-                }
               }
             }
 
@@ -138,8 +123,7 @@ const Iterator = createExtension(
             possibleGuest.ready = false;
 
             if (possibleGuest.filtered) {
-              this._availableAndFilteredGuestCount--;
-              guest = possibleGuest.person;
+              return possibleGuest.person;
             }
           }
           this._index++;
@@ -147,10 +131,18 @@ const Iterator = createExtension(
         this._levelUp();
       }
 
-      return guest;
+      return null;
+    },
+    next() {
+      const result = this._currentGuest;
+      if (!this.done()) {
+        this._currentGuest = this._findNext();
+      }
+
+      return result;
     },
     done() {
-      return this._availableAndFilteredGuestCount === 0;
+      return this._currentGuest === null;
     }
   }
 );
