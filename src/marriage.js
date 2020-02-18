@@ -19,16 +19,6 @@ function createExtension(baseClass, constructor, prototype) {
   return constructor;
 }
 
-const compareStrings = (a, b) => {
-  if (a < b) {
-    return -1;
-  } else if (a > b) {
-    return 1;
-  }
-
-  return 0;
-};
-
 /**
  * Фильтр друзей
  * @constructor
@@ -93,7 +83,7 @@ const Iterator = createExtension(
       }
     }
 
-    possibleGuests.sort((a, b) => compareStrings(a.person.name, b.person.name));
+    possibleGuests.sort((a, b) => a.person.name.localeCompare(b.person.name));
     for (let i = 0; i < possibleGuests.length; i++) {
       possibleGuestIndexes[possibleGuests[i].person.name] = i;
     }
@@ -118,7 +108,9 @@ const Iterator = createExtension(
     next() {
       let guest = null;
 
-      while (!this.done()) {
+      let changes = true;
+      while (changes) {
+        changes = false;
         while (this._index < this._possibleGuests.length) {
           const possibleGuest = this._possibleGuests[this._index];
 
@@ -133,6 +125,7 @@ const Iterator = createExtension(
 
               if (!newGuest.ready && !newGuest.available && !newGuest.used) {
                 newGuest.available = true;
+                changes = true;
 
                 if (newGuest.filtered) {
                   this._availableAndFilteredGuestCount++;
