@@ -115,6 +115,7 @@ const Iterator = createExtension(
           const possibleGuest = this._possibleGuests[this._index];
 
           if (possibleGuest.ready) {
+            changes = true;
             if (possibleGuest.filtered && guest !== null) {
               return guest;
             }
@@ -125,7 +126,6 @@ const Iterator = createExtension(
 
               if (!newGuest.ready && !newGuest.available && !newGuest.used) {
                 newGuest.available = true;
-                changes = true;
 
                 if (newGuest.filtered) {
                   this._availableAndFilteredGuestCount++;
