@@ -91,25 +91,28 @@ const Iterator = createExtension(
   },
   {
     _levelUp() {
+      let readyCount = 0;
+      this._index = 0;
+
       for (let i = 0; i < this._possibleGuests.length; i++) {
         const possibleGuest = this._possibleGuests[i];
 
         if (possibleGuest.available && !possibleGuest.used) {
           possibleGuest.ready = true;
+          readyCount++;
         }
       }
 
-      this._index = 0;
+      return readyCount;
     },
     _findNext() {
-      for (let i = 0, changes = false; changes || i < 2; i++) {
-        changes = false;
+      let changes = true;
+
+      while (changes) {
         while (this._index < this._possibleGuests.length) {
           const possibleGuest = this._possibleGuests[this._index];
 
           if (possibleGuest.ready) {
-            changes = true;
-
             for (const friend of possibleGuest.person.friends) {
               const possibleGuestIndex = this._possibleGuestIndexes[friend];
               const newGuest = this._possibleGuests[possibleGuestIndex];
@@ -131,7 +134,9 @@ const Iterator = createExtension(
           }
           this._index++;
         }
-        this._levelUp();
+
+        const readyCount = this._levelUp();
+        changes = readyCount > 0;
       }
 
       return null;
@@ -168,8 +173,9 @@ const LimitedIterator = createExtension(
   },
   {
     _levelUp() {
-      Iterator.prototype._levelUp.call(this);
       this.level++;
+
+      return this.level > this.maxLevel ? 0 : Iterator.prototype._levelUp.call(this);
     },
     done() {
       return Iterator.prototype.done.call(this) || this.level > this.maxLevel;
