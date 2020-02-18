@@ -108,7 +108,7 @@ const Iterator = createExtension(
     _findNext() {
       let changes = true;
 
-      while (changes) {
+      while (!this.done() && changes) {
         while (this._index < this._possibleGuests.length) {
           const possibleGuest = this._possibleGuests[this._index];
 
@@ -143,9 +143,7 @@ const Iterator = createExtension(
     },
     next() {
       const result = this._currentGuest;
-      if (!this.done()) {
-        this._currentGuest = this._findNext();
-      }
+      this._currentGuest = this._findNext();
 
       return result;
     },
