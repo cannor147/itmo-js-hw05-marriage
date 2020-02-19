@@ -65,12 +65,11 @@ const Iterator = createExtension(
     }
 
     const possibleGuests = [];
-    const possibleGuestIndexes = [];
+    const possibleGuestIndexes = new Map();
 
     for (const friend of friends) {
       const possibleGuest = {
         person: friend,
-        filtered: filter.test(friend),
         available: friend.best,
         ready: friend.best,
         used: false
@@ -81,13 +80,14 @@ const Iterator = createExtension(
 
     possibleGuests.sort((a, b) => a.person.name.localeCompare(b.person.name));
     for (let i = 0; i < possibleGuests.length; i++) {
-      possibleGuestIndexes[possibleGuests[i].person.name] = i;
+      possibleGuestIndexes.set(possibleGuests[i].person.name, i);
     }
 
     this._possibleGuestIndexes = possibleGuestIndexes;
     this._possibleGuests = possibleGuests;
     this._index = 0;
     this._currentGuest = this._findNext();
+    this._filter = filter;
   },
   {
     _levelUp() {
@@ -103,7 +103,7 @@ const Iterator = createExtension(
         }
       }
 
-      return readyCount;
+      return readyCount > 0;
     },
     _findNext() {
       let changes = true;
@@ -114,7 +114,7 @@ const Iterator = createExtension(
 
           if (possibleGuest.ready) {
             for (const friend of possibleGuest.person.friends) {
-              const possibleGuestIndex = this._possibleGuestIndexes[friend];
+              const possibleGuestIndex = this._possibleGuestIndexes.get(friend);
               const newGuest = this._possibleGuests[possibleGuestIndex];
 
               if (!newGuest.ready && !newGuest.available && !newGuest.used) {
@@ -126,7 +126,7 @@ const Iterator = createExtension(
             possibleGuest.available = false;
             possibleGuest.ready = false;
 
-            if (possibleGuest.filtered) {
+            if (this._filter.test(possibleGuest.person)) {
               this._index++;
 
               return possibleGuest.person;
@@ -135,8 +135,7 @@ const Iterator = createExtension(
           this._index++;
         }
 
-        const readyCount = this._levelUp();
-        changes = readyCount > 0;
+        changes = this._levelUp();
       }
 
       return null;
@@ -173,7 +172,7 @@ const LimitedIterator = createExtension(
     _levelUp() {
       this.level++;
 
-      return this.level > this.maxLevel ? 0 : Iterator.prototype._levelUp.call(this);
+      return this.level <= this.maxLevel && Iterator.prototype._levelUp.call(this);
     },
     done() {
       return Iterator.prototype.done.call(this) || this.level > this.maxLevel;
