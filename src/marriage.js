@@ -86,8 +86,8 @@ const Iterator = createExtension(
     this._possibleGuestIndexes = possibleGuestIndexes;
     this._possibleGuests = possibleGuests;
     this._index = 0;
-    this._currentGuest = this._findNext();
     this._filter = filter;
+    this._currentGuest = this._findNext();
   },
   {
     _levelUp() {
