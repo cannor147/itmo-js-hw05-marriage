@@ -145,9 +145,7 @@ const Iterator = createExtension(
       }
 
       const result = this._currentGuest;
-      if (!this.done()) {
-        this._currentGuest = this._findNext();
-      }
+      this._currentGuest = this._findNext();
 
       return result;
     },
