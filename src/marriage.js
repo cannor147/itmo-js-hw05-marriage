@@ -95,7 +95,9 @@ const Iterator = createExtension(
       let readyCount = 0;
       this._index = 0;
 
-      for (const possibleGuest of this._possibleGuests) {
+      for (let i = 0; i < this._possibleGuests.length; i++) {
+        const possibleGuest = this._possibleGuests[i];
+
         if (possibleGuest.available && !possibleGuest.used) {
           possibleGuest.ready = true;
           readyCount++;
@@ -138,17 +140,15 @@ const Iterator = createExtension(
       return null;
     },
     next() {
-      if (this._done) {
-        return null;
-      }
-
       const result = this._currentGuest;
-      this._currentGuest = this._findNext();
+      if (!this.done()) {
+        this._currentGuest = this._findNext();
+      }
 
       return result;
     },
     done() {
-      return this._done;
+      return this._currentGuest === null;
     }
   }
 );
@@ -168,13 +168,15 @@ const LimitedIterator = createExtension(
 
     this.level = 1;
     this.maxLevel = maxLevel;
-    this._done = this.level > this.maxLevel;
   },
   {
     _levelUp() {
       this.level++;
 
       return this.level <= this.maxLevel && Iterator.prototype._levelUp.call(this);
+    },
+    next() {
+      return this.level > this.maxLevel ? null : Iterator.prototype.next.call(this);
     },
     done() {
       return Iterator.prototype.done.call(this) || this.level > this.maxLevel;
