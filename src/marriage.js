@@ -150,7 +150,7 @@ const Iterator = createExtension(
       return result;
     },
     done() {
-      return this._done;
+      return this._currentGuest === null;
     }
   }
 );
@@ -177,9 +177,6 @@ const LimitedIterator = createExtension(
       this.level++;
 
       return this.level <= this.maxLevel && Iterator.prototype._levelUp.call(this);
-    },
-    done() {
-      return Iterator.prototype.done.call(this) || this.level > this.maxLevel;
     }
   }
 );
