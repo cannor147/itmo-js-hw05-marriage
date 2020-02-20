@@ -87,7 +87,8 @@ const Iterator = createExtension(
     this._possibleGuests = possibleGuests;
     this._index = 0;
     this._filter = filter;
-    this._currentGuest = this._findNext(false);
+    this._done = false;
+    this._currentGuest = this._findNext();
   },
   {
     _levelUp() {
@@ -105,10 +106,8 @@ const Iterator = createExtension(
 
       return readyCount > 0;
     },
-    _findNext(checkDone) {
-      let changes = true;
-
-      while ((!checkDone || !this.done()) && changes) {
+    _findNext() {
+      while (!this._done) {
         while (this._index < this._possibleGuests.length) {
           const possibleGuest = this._possibleGuests[this._index];
 
@@ -135,21 +134,23 @@ const Iterator = createExtension(
           this._index++;
         }
 
-        changes = this._levelUp();
+        this._done = !this._levelUp();
       }
 
       return null;
     },
     next() {
-      const result = this._currentGuest;
-      if (!this.done()) {
-        this._currentGuest = this._findNext(true);
+      if (this._done) {
+        return null;
       }
+
+      const result = this._currentGuest;
+      this._currentGuest = this._findNext();
 
       return result;
     },
     done() {
-      return this._currentGuest === null;
+      return this._done;
     }
   }
 );
@@ -169,15 +170,13 @@ const LimitedIterator = createExtension(
 
     this.level = 1;
     this.maxLevel = maxLevel;
+    this._done = this.level > this.maxLevel;
   },
   {
     _levelUp() {
       this.level++;
 
       return this.level <= this.maxLevel && Iterator.prototype._levelUp.call(this);
-    },
-    next() {
-      return this.level > this.maxLevel ? null : Iterator.prototype.next.call(this);
     },
     done() {
       return Iterator.prototype.done.call(this) || this.level > this.maxLevel;
