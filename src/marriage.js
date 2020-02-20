@@ -140,6 +140,10 @@ const Iterator = createExtension(
       return null;
     },
     next() {
+      if (this._done) {
+        return null;
+      }
+
       const result = this._currentGuest;
       if (!this.done()) {
         this._currentGuest = this._findNext();
@@ -168,6 +172,7 @@ const LimitedIterator = createExtension(
 
     this.level = 1;
     this.maxLevel = maxLevel;
+    this._done = this.level > this.maxLevel;
   },
   {
     _levelUp() {
