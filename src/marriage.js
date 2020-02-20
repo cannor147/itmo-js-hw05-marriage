@@ -65,7 +65,7 @@ const Iterator = createExtension(
     }
 
     const possibleGuests = [];
-    const possibleGuestIndexes = new Map();
+    const nameToPossibleGuestIndexMap = new Map();
 
     for (const friend of friends) {
       const possibleGuest = {
@@ -80,10 +80,10 @@ const Iterator = createExtension(
 
     possibleGuests.sort((a, b) => a.person.name.localeCompare(b.person.name));
     for (let i = 0; i < possibleGuests.length; i++) {
-      possibleGuestIndexes.set(possibleGuests[i].person.name, i);
+      nameToPossibleGuestIndexMap.set(possibleGuests[i].person.name, i);
     }
 
-    this._possibleGuestIndexes = possibleGuestIndexes;
+    this._nameToPossibleGuestIndexMap = nameToPossibleGuestIndexMap;
     this._possibleGuests = possibleGuests;
     this._index = 0;
     this._filter = filter;
@@ -114,7 +114,7 @@ const Iterator = createExtension(
 
           if (possibleGuest.ready) {
             for (const friend of possibleGuest.person.friends) {
-              const possibleGuestIndex = this._possibleGuestIndexes.get(friend);
+              const possibleGuestIndex = this._nameToPossibleGuestIndexMap.get(friend);
               const newGuest = this._possibleGuests[possibleGuestIndex];
 
               if (!newGuest.ready && !newGuest.available && !newGuest.used) {
