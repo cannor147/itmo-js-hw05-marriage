@@ -92,7 +92,6 @@ const Iterator = createExtension(
   },
   {
     _init() {
-      this._level = 1;
       this._index = 0;
       this._done = false;
     },
@@ -164,7 +163,7 @@ const Iterator = createExtension(
  */
 const LimitedIterator = createExtension(
   Iterator,
-  function(friends, filter, maxLevel) {
+  function(friends, filter, maxLevel = Number.MAX_SAFE_INTEGER) {
     Iterator.call(this, friends, filter, maxLevel);
 
     this._maxLevel = maxLevel;
@@ -179,6 +178,8 @@ const LimitedIterator = createExtension(
       this._level++;
 
       if (this._level > this._maxLevel) {
+        this._done = true;
+      } else {
         Iterator.prototype._levelUp.call(this);
       }
     }
