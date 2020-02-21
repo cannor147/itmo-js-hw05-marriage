@@ -151,7 +151,7 @@ const Iterator = createExtension(
       return result;
     },
     done() {
-      return this._done;
+      return this._currentGuest === null;
     }
   }
 );
