@@ -85,12 +85,15 @@ const Iterator = createExtension(
 
     this._nameToPossibleGuestIndexMap = nameToPossibleGuestIndexMap;
     this._possibleGuests = possibleGuests;
-    this._index = 0;
     this._filter = filter;
-    this._done = false;
+    this._init();
     this._currentGuest = this._findNext();
   },
   {
+    _init() {
+      this._index = 0;
+      this._done = false;
+    },
     _levelUp() {
       let readyCount = 0;
       this._index = 0;
@@ -150,7 +153,7 @@ const Iterator = createExtension(
       return result;
     },
     done() {
-      return this._currentGuest === null;
+      return this._done;
     }
   }
 );
@@ -168,15 +171,21 @@ const LimitedIterator = createExtension(
   function(friends, filter, maxLevel) {
     Iterator.call(this, friends, filter);
 
-    this.level = 1;
     this.maxLevel = maxLevel;
-    this._done = this.level > this.maxLevel;
   },
   {
+    _init() {
+      Iterator.prototype._init.call(this);
+      this.level = 1;
+      this._done = this.level > this.maxLevel;
+    },
     _levelUp() {
       this.level++;
 
       return this.level <= this.maxLevel && Iterator.prototype._levelUp.call(this);
+    },
+    done() {
+      return Iterator.prototype.done.call(this) || this.level > this.maxLevel;
     }
   }
 );
