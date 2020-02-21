@@ -59,7 +59,7 @@ const FemaleFilter = createExtension(Filter, function() {}, {
  */
 const Iterator = createExtension(
   Object,
-  function(friends, filter) {
+  function(friends, filter, maxLevel = Number.MAX_SAFE_INTEGER) {
     if (!(filter instanceof Filter)) {
       throw new TypeError("Argument 'filter' expected to be a Filter instance.");
     }
@@ -86,17 +86,24 @@ const Iterator = createExtension(
     this._nameToPossibleGuestIndexMap = nameToPossibleGuestIndexMap;
     this._possibleGuests = possibleGuests;
     this._filter = filter;
+    this._maxLevel = maxLevel;
     this._init();
     this._currentGuest = this._findNext();
   },
   {
     _init() {
+      this._level = 1;
       this._index = 0;
       this._done = false;
     },
     _levelUp() {
+      this._level++;
       this._index = 0;
       this._done = true;
+
+      if (this._level > this._maxLevel) {
+        return;
+      }
 
       for (let i = 0; i < this._possibleGuests.length; i++) {
         const possibleGuest = this._possibleGuests[i];
@@ -151,7 +158,7 @@ const Iterator = createExtension(
       return result;
     },
     done() {
-      return this._currentGuest === null;
+      return this._done;
     }
   }
 );
@@ -164,33 +171,38 @@ const Iterator = createExtension(
  * @param {Filter} filter Фильтр друзей
  * @param {Number} maxLevel Максимальный круг друзей
  */
-const LimitedIterator = createExtension(
-  Iterator,
-  function(friends, filter, maxLevel) {
-    Iterator.call(this, friends, filter);
-
-    this.maxLevel = maxLevel;
-  },
-  {
-    _init() {
-      Iterator.prototype._init.call(this);
-      this.level = 1;
-      this._done = this.level > this.maxLevel;
-    },
-    _levelUp() {
-      this.level++;
-
-      if (this.level <= this.maxLevel) {
-        Iterator.prototype._levelUp.call(this);
-      } else {
-        this._done = true;
-      }
-    },
-    next() {
-      return this.level > this.maxLevel ? null : Iterator.prototype.next.call(this);
-    }
-  }
-);
+// const LimitedIterator = createExtension(
+//   Iterator,
+//   function(friends, filter, maxLevel) {
+//     Iterator.call(this, friends, filter);
+//
+//     this.maxLevel = maxLevel;
+//   },
+//   {
+//     _init() {
+//       Iterator.prototype._init.call(this);
+//       this._done = this.level > this.maxLevel;
+//     },
+//     _levelUp() {
+//       this.level++;
+//
+//       if (this.level <= this.maxLevel) {
+//         Iterator.prototype._levelUp.call(this);
+//       } else {
+//         this._done = true;
+//       }
+//     },
+//     next() {
+//       return this.level > this.maxLevel ? null : Iterator.prototype.next.call(this);
+//     },
+//     done() {
+//       return Iterator.prototype.done.call(this) || this.level > this.maxLevel;
+//     }
+//   }
+// );
+const LimitedIterator = function(friends, filter, maxLevel) {
+  return new Iterator(friends, filter, maxLevel);
+};
 
 module.exports = {
   Iterator,
