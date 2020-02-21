@@ -99,9 +99,7 @@ const Iterator = createExtension(
       this._index = 0;
       this._done = true;
 
-      for (let i = 0; i < this._possibleGuests.length; i++) {
-        const possibleGuest = this._possibleGuests[i];
-
+      for (const possibleGuest of this._possibleGuests) {
         if (possibleGuest.available && !possibleGuest.used) {
           possibleGuest.ready = true;
           this._done = false;
