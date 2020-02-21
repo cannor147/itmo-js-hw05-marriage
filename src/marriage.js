@@ -185,6 +185,9 @@ const LimitedIterator = createExtension(
       } else {
         this._done = true;
       }
+    },
+    next() {
+      return this.level > this.maxLevel ? null : Iterator.prototype.next.call(this);
     }
   }
 );
