@@ -94,16 +94,11 @@ const Iterator = createExtension(
     _init() {
       this._level = 1;
       this._index = 0;
-      this._done = this._level > this._maxLevel;
+      this._done = false;
     },
     _levelUp() {
-      this._level++;
       this._index = 0;
       this._done = true;
-
-      if (this._level > this._maxLevel) {
-        return;
-      }
 
       for (let i = 0; i < this._possibleGuests.length; i++) {
         const possibleGuest = this._possibleGuests[i];
@@ -171,8 +166,23 @@ const LimitedIterator = createExtension(
   Iterator,
   function(friends, filter, maxLevel) {
     Iterator.call(this, friends, filter, maxLevel);
+
+    this._maxLevel = maxLevel;
   },
-  {}
+  {
+    _init() {
+      this._level = 1;
+      this._index = 0;
+      this._done = this._level > this._maxLevel;
+    },
+    _levelUp() {
+      this._level++;
+
+      if (this._level > this._maxLevel) {
+        Iterator.prototype._levelUp.call(this);
+      }
+    }
+  }
 );
 
 module.exports = {
