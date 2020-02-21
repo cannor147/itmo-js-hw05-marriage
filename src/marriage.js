@@ -151,7 +151,7 @@ const Iterator = createExtension(
       return result;
     },
     done() {
-      return this._currentGuest === null;
+      return this._done;
     }
   }
 );
@@ -185,12 +185,6 @@ const LimitedIterator = createExtension(
       } else {
         this._done = true;
       }
-    },
-    next() {
-      return this.level > this.maxLevel ? null : Iterator.prototype.next.call(this);
-    },
-    done() {
-      return Iterator.prototype.done.call(this) || this.level > this.maxLevel;
     }
   }
 );
