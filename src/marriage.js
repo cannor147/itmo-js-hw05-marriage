@@ -167,38 +167,13 @@ const Iterator = createExtension(
  * @param {Filter} filter Фильтр друзей
  * @param {Number} maxLevel Максимальный круг друзей
  */
-// const LimitedIterator = createExtension(
-//   Iterator,
-//   function(friends, filter, maxLevel) {
-//     Iterator.call(this, friends, filter);
-//
-//     this.maxLevel = maxLevel;
-//   },
-//   {
-//     _init() {
-//       Iterator.prototype._init.call(this);
-//       this._done = this.level > this.maxLevel;
-//     },
-//     _levelUp() {
-//       this.level++;
-//
-//       if (this.level <= this.maxLevel) {
-//         Iterator.prototype._levelUp.call(this);
-//       } else {
-//         this._done = true;
-//       }
-//     },
-//     next() {
-//       return this.level > this.maxLevel ? null : Iterator.prototype.next.call(this);
-//     },
-//     done() {
-//       return Iterator.prototype.done.call(this) || this.level > this.maxLevel;
-//     }
-//   }
-// );
-const LimitedIterator = function(friends, filter, maxLevel) {
-  return new Iterator(friends, filter, maxLevel);
-};
+const LimitedIterator = createExtension(
+  Iterator,
+  function(friends, filter, maxLevel) {
+    Iterator.call(this, friends, filter, maxLevel);
+  },
+  {}
+);
 
 module.exports = {
   Iterator,
