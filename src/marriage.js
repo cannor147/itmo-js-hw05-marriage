@@ -170,8 +170,8 @@ const LimitedIterator = createExtension(
   },
   {
     _init() {
+      Iterator.prototype._init.call(this);
       this._level = 1;
-      this._index = 0;
       this._done = this._level > this._maxLevel;
     },
     _levelUp() {
